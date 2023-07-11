@@ -1,11 +1,12 @@
 package ks.msx.Test.config;
 
 
-import ks.msx.Test.entity.Role;
+import ks.msx.Test.entity.Authority;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,11 +26,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api").permitAll()
-                        .requestMatchers("/api/user")//.hasAuthority(Authority.READ.name())
-                        .hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-                        .requestMatchers("/**")//.hasAuthority(Authority.WRITE.name())
-                        .hasRole(Role.ADMIN.name())
-                ).formLogin(form -> form.permitAll());
+                        .requestMatchers("/api/user").hasAuthority(Authority.READ.name())
+                        //.requestMatchers("/**").hasAuthority(Authority.WRITE.name())
+                        .anyRequest().hasAuthority(Authority.WRITE.name())
+                ).formLogin(AbstractAuthenticationFilterConfigurer::permitAll);
         return http.build();
     }
 
@@ -38,12 +38,12 @@ public class SecurityConfig {
         UserDetails user = User
                 .withUsername("user")
                 .password(passwordEncoder().encode("user"))
-                .roles(Role.USER.getAuthority())
+                .authorities(Authority.READ.name())
                 .build();
         UserDetails admin = User
                 .withUsername("admin")
                 .password(passwordEncoder().encode("admin"))
-                .roles(Role.ADMIN.getAuthority())
+                .authorities(Authority.WRITE.name() , Authority.READ.name())
                 .build();
         return new InMemoryUserDetailsManager(user, admin);
     }

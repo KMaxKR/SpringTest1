@@ -23,4 +23,9 @@ public class MainController {
     public String adminApi(){
         return "Api for Admin";
     }
+
+    @GetMapping("/root")
+    public String rootApi(){
+        return "Api for Root";
+    }
 }
