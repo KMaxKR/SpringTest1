@@ -1,9 +1,6 @@
 package ks.msx.Test.entity;
 
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
 import java.util.List;
 
 public enum Role {

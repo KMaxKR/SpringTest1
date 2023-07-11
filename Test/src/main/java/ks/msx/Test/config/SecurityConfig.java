@@ -2,12 +2,8 @@ package ks.msx.Test.config;
 
 
 import ks.msx.Test.entity.Role;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -43,12 +39,10 @@ public class SecurityConfig {
                 .withUsername("user")
                 .password(passwordEncoder().encode("user"))
                 .roles(Role.USER.getAuthority())
-                //.authorities(Role.USER.getAuthority())
                 .build();
         UserDetails admin = User
                 .withUsername("admin")
                 .password(passwordEncoder().encode("admin"))
-                //.authorities(Role.ADMIN.getAuthority())
                 .roles(Role.ADMIN.getAuthority())
                 .build();
         return new InMemoryUserDetailsManager(user, admin);
