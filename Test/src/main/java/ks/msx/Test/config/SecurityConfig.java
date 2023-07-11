@@ -2,16 +2,19 @@ package ks.msx.Test.config;
 
 
 import jakarta.servlet.FilterChain;
+import ks.msx.Test.entity.Authority;
 import ks.msx.Test.entity.Role;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,26 +29,34 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api").permitAll()
-                        .requestMatchers("/api/user").hasAnyRole(Role.USER.name(), Role.ADMIN.name())
-                        .requestMatchers("/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers("/api/user")//.hasAuthority(Authority.READ.name())
+                        .hasAnyRole(Role.USER.name(), Role.ADMIN.name())
+                        .requestMatchers("/**")//.hasAuthority(Authority.WRITE.name())
+                        .hasRole(Role.ADMIN.name())
                 ).formLogin(form -> form.permitAll());
         return http.build();
     }
 
     @Bean
     public UserDetailsService userDetailsService(){
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
+        UserDetails user = User
+                .withUsername("user")
                 .password("user")
-                .roles(Role.USER.name())
+                .roles(Role.USER.getAuthority())
+                //.authorities(Role.USER.getAuthority())
                 .build();
-        UserDetails admin = User.withDefaultPasswordEncoder()
-                .username("admin")
+        UserDetails admin = User
+                .withUsername("admin")
                 .password("admin")
-                .roles(Role.ADMIN.name())
+                //.authorities(Role.ADMIN.getAuthority())
+                .roles(Role.ADMIN.getAuthority())
                 .build();
+        //System.out.println(Role.USER.getAuthority());
         return new InMemoryUserDetailsManager(user, admin);
     }
 
-
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return NoOpPasswordEncoder.getInstance();
+    }
 }
