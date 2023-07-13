@@ -1,6 +1,7 @@
 package ks.msx.Test.controllers;
 
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,21 +12,18 @@ public class MainController {
 
     @GetMapping
     public String guestApi(){
-        return "Api for Guest";
+        return "guest";
     }
 
     @GetMapping("/user")
+    @PreAuthorize("READ")
     public String userApi(){
-        return "Api for User";
+        return "user";
     }
 
     @GetMapping("/admin")
+    @PreAuthorize("WRITE")
     public String adminApi(){
-        return "Api for Admin";
-    }
-
-    @GetMapping("/root")
-    public String rootApi(){
-        return "Api for Root";
+        return "admin";
     }
 }
